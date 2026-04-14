@@ -10,6 +10,7 @@ export async function GET() {
     });
     return NextResponse.json(messages);
   } catch (error) {
+    console.error('GET messages error:', error);
     return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
   }
 }
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
-    console.error('Contact form error:', error);
+    console.error('POST message error:', error);
     return NextResponse.json({ error: 'Failed to save message' }, { status: 500 });
   }
 }

@@ -1,21 +1,25 @@
 import { prisma } from '@/lib/prisma';
-import { deleteImage } from '@/lib/cloudinary';
 import { NextResponse } from 'next/server';
 
 // GET - Fetch single project
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
+    
     const project = await prisma.project.findUnique({
-      where: { id: params.id }
+      where: { id: id }
     });
+    
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
+    
     return NextResponse.json(project);
   } catch (error) {
+    console.error('GET project error:', error);
     return NextResponse.json({ error: 'Failed to fetch project' }, { status: 500 });
   }
 }
@@ -23,12 +27,14 @@ export async function GET(
 // PUT - Update project
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const body = await request.json();
+    
     const project = await prisma.project.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         name: body.name,
         description: body.description,
@@ -39,8 +45,10 @@ export async function PUT(
         imagePublicId: body.imagePublicId,
       }
     });
+    
     return NextResponse.json(project);
   } catch (error) {
+    console.error('PUT project error:', error);
     return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
   }
 }
@@ -48,23 +56,27 @@ export async function PUT(
 // DELETE - Delete project
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get project to delete image from Cloudinary
+    const { id } = await context.params;
+    
     const project = await prisma.project.findUnique({
-      where: { id: params.id }
+      where: { id: id }
     });
     
     if (project?.imagePublicId) {
+      const { deleteImage } = await import('@/lib/cloudinary');
       await deleteImage(project.imagePublicId);
     }
     
     await prisma.project.delete({
-      where: { id: params.id }
+      where: { id: id }
     });
+    
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('DELETE project error:', error);
     return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
   }
 }
