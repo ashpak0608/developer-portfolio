@@ -1,36 +1,168 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ashpak Shaikh - Developer Portfolio
 
-## Getting Started
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?logo=vercel)](https://ashpakportfolio.vercel.app)
+[![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black?logo=next.js)](https://nextjs.org)
+[![Database](https://img.shields.io/badge/Database-Neon%20PostgreSQL-006400?logo=postgresql)](https://neon.tech)
+[![ORM](https://img.shields.io/badge/ORM-Prisma-2D3748?logo=prisma)](https://prisma.io)
 
-First, run the development server:
+A modern, full-stack developer portfolio with admin dashboard, contact form with email notifications, and image uploads.
 
-```bash
+## ✨ Features
+
+- 🎨 **Modern UI** - Dark theme with glass-morphism effects, smooth animations, and 3D elements
+- 📱 **Fully Responsive** - Works perfectly on all devices
+- 📊 **Admin Dashboard** - Manage projects and view contact messages
+- 📧 **Email Notifications** - Instant email alerts for new contact form submissions
+- 🖼️ **Image Uploads** - Upload project screenshots via Cloudinary
+- 🗄️ **Database Backend** - PostgreSQL with Prisma ORM
+- 🚀 **Deployed on Vercel** - Free hosting with automatic deployments
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS, Framer Motion |
+| **Backend** | Next.js API Routes, Prisma ORM |
+| **Database** | PostgreSQL (Neon) |
+| **Email** | Resend |
+| **Image Hosting** | Cloudinary |
+| **Deployment** | Vercel |
+| **3D Graphics** | Three.js, React Three Fiber |
+
+## 📁 Project Structure
+
+src/
+├── app/
+│ ├── admin/ # Admin dashboard pages
+│ │ ├── login/ # Admin login page
+│ │ └── dashboard/ # Main admin dashboard
+│ ├── api/ # API routes
+│ │ ├── admin/ # Authentication endpoints
+│ │ ├── contact/ # Contact form endpoints
+│ │ ├── projects/ # CRUD operations for projects
+│ │ └── upload/ # Image upload endpoint
+│ └── components/ # Reusable React components
+├── lib/ # Utility functions
+│ ├── prisma.ts # Database connection
+│ ├── email.ts # Email utilities
+│ └── cloudinary.ts # Image upload utilities
+└── types/ # TypeScript type definitions
+
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20.x or higher
+- npm 10.x or higher
+- PostgreSQL database (Neon recommended)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ashpak0608/developer-portfolio.git
+   cd developer-portfolio
+
+   Install dependencies
+
+npm install
+
+# Database
+DATABASE_URL="postgresql://..."
+
+# Admin
+ADMIN_PASSWORD="yourStrongPassword123!"
+
+# Email (Resend)
+RESEND_API_KEY="re_..."
+ADMIN_EMAIL="your-email@gmail.com"
+FROM_EMAIL="onboarding@resend.dev"
+
+# Image Upload (Cloudinary)
+CLOUDINARY_CLOUD_NAME="your_cloud_name"
+CLOUDINARY_API_KEY="your_api_key"
+CLOUDINARY_API_SECRET="your_api_secret"
+
+npx prisma db push
+npx prisma generate
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📊 Admin Dashboard
+Access the admin dashboard at /admin/login
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Login: Use the ADMIN_PASSWORD from your .env file
 
-## Learn More
+Messages: View, read, and delete contact form submissions
 
-To learn more about Next.js, take a look at the following resources:
+Projects: Add, edit, and delete projects with image uploads
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+📧 Email Notifications
+When someone submits the contact form:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Admin receives - Detailed email with all form data
 
-## Deploy on Vercel
+User receives - Auto-reply confirmation email
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Upload project screenshots via the admin dashboard
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Images are stored on Cloudinary (free tier)
+
+Automatic optimization and responsive images
+
+🔧 Available Scripts
+Command	Description
+npm run dev	Start development server
+npm run build	Build for production
+npm start	Start production server
+npx prisma studio	Open database GUI
+npx prisma db push	Update database schema
+
+
+🌐 Live Demo
+Visit ashpakportfolio.vercel.app
+
+📞 Contact
+Email: shaikhashpak0608@gmail.com
+
+GitHub: @ashpak0608
+
+LinkedIn: Ashpak Shaikh
+
+📄 License
+MIT License - feel free to use this for your own portfolio!
+
+🙏 Acknowledgments
+Next.js - React framework
+
+Prisma - Database ORM
+
+Neon - Serverless PostgreSQL
+
+Resend - Email service
+
+Cloudinary - Image hosting
+
+Tailwind CSS - Styling
+
+Framer Motion - Animations
+
+text
+
+---
+
+## ✅ Final Steps
+
+1. **Update your database schema**:
+   ```bash
+   npx prisma db push
+Test locally:
+
+bash
+npm run dev
+Visit admin dashboard: http://localhost:3000/admin/login
+
+Push to GitHub and deploy to Vercel
