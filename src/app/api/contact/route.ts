@@ -1,61 +1,40 @@
-// src/app/api/contact/route.ts
-// This file handles contact form submissions
+import { prisma } from '@/lib/prisma';
+import { sendContactNotification } from '@/lib/email';
+import { NextResponse } from 'next/server';
 
-import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
-
-// POST /api/contact - Save a contact message
-export async function POST(request: Request) {
-  try {
-    // Get the form data from request
-    const body = await request.json()
-    
-    // Validate required fields
-    if (!body.name || !body.email || !body.message) {
-      return NextResponse.json(
-        { error: 'Missing required fields: name, email, message' },
-        { status: 400 }
-      )
-    }
-    
-    // Save message to database
-    const message = await prisma.message.create({
-      data: {
-        name: body.name,
-        email: body.email,
-        message: body.message,
-        isRead: false, // Mark as unread by default
-      }
-    })
-    
-    // Return success response
-    return NextResponse.json(
-      { success: true, message: 'Message sent successfully!' },
-      { status: 201 }
-    )
-  } catch (error) {
-    console.error('Error saving message:', error)
-    return NextResponse.json(
-      { error: 'Failed to send message' },
-      { status: 500 }
-    )
-  }
-}
-
-// GET /api/contact - Fetch all messages (for admin use)
+// GET - Fetch all messages (for admin)
 export async function GET() {
   try {
     const messages = await prisma.message.findMany({
-      orderBy: {
-        sentAt: 'desc'  // Newest messages first
-      }
-    })
-    return NextResponse.json(messages)
+      orderBy: { sentAt: 'desc' }
+    });
+    return NextResponse.json(messages);
   } catch (error) {
-    console.error('Error fetching messages:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch messages' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
+  }
+}
+
+// POST - Save new message
+export async function POST(request: Request) {
+  try {
+    const { name, email, message } = await request.json();
+    
+    // Validate input
+    if (!name || !email || !message) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    
+    // Save to database
+    const newMessage = await prisma.message.create({
+      data: { name, email, message }
+    });
+    
+    // Send email notifications (don't await - let it run in background)
+    sendContactNotification(name, email, message).catch(console.error);
+    
+    return NextResponse.json(newMessage, { status: 201 });
+  } catch (error) {
+    console.error('Contact form error:', error);
+    return NextResponse.json({ error: 'Failed to save message' }, { status: 500 });
   }
 }
