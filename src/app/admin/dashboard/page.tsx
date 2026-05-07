@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { 
-  LogOut, 
-  Mail, 
-  Trash2, 
-  CheckCircle, 
-  Circle, 
-  Plus, 
-  Edit2, 
+import {
+  LogOut,
+  Mail,
+  Trash2,
+  CheckCircle,
+  Circle,
+  Plus,
+  Edit2,
   X,
   FolderGit2,
   Loader2
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imagePublicId, setImagePublicId] = useState<string | null>(null);
   const [savingProject, setSavingProject] = useState(false);
-  
+
   const router = useRouter();
 
   // Check authentication
@@ -78,10 +78,10 @@ export default function AdminDashboard() {
         fetch('/api/contact'),
         fetch('/api/projects'),
       ]);
-      
+
       const messagesData = await messagesRes.json();
       const projectsData = await projectsRes.json();
-      
+
       setMessages(messagesData);
       setProjects(projectsData);
     } catch (error) {
@@ -91,29 +91,65 @@ export default function AdminDashboard() {
     }
   };
 
+  // ✅ FIXED: Delete message with immediate UI update
   const handleDeleteMessage = async (id: string) => {
     if (!confirm('Delete this message?')) return;
-    await fetch(`/api/contact/${id}`, { method: 'DELETE' });
-    setMessages(messages.filter(m => m.id !== id));
+
+    try {
+      const response = await fetch(`/api/contact/${id}`, { method: 'DELETE' });
+
+      if (response.ok) {
+        // Immediately remove from UI
+        setMessages(messages.filter(m => m.id !== id));
+      } else {
+        alert('Failed to delete message');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('An error occurred');
+    }
   };
 
+  // ✅ FIXED: Mark message as read with immediate UI update
   const handleMarkRead = async (id: string, isRead: boolean) => {
-    await fetch(`/api/contact/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isRead: !isRead }),
-    });
-    setMessages(messages.map(m => 
-      m.id === id ? { ...m, isRead: !isRead } : m
-    ));
+    try {
+      const response = await fetch(`/api/contact/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isRead: !isRead }),
+      });
+
+      if (response.ok) {
+        // Immediately update UI
+        setMessages(messages.map(m =>
+          m.id === id ? { ...m, isRead: !isRead } : m
+        ));
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+    }
   };
 
+  // ✅ FIXED: Delete project with immediate UI update
   const handleDeleteProject = async (id: string) => {
     if (!confirm('Delete this project? This will also delete the image.')) return;
-    await fetch(`/api/projects/${id}`, { method: 'DELETE' });
-    setProjects(projects.filter(p => p.id !== id));
+
+    try {
+      const response = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+
+      if (response.ok) {
+        // Immediately remove from UI
+        setProjects(projects.filter(p => p.id !== id));
+      } else {
+        alert('Failed to delete project');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('An error occurred');
+    }
   };
 
+  // ✅ FIXED: Save project with immediate UI update
   const handleSaveProject = async () => {
     setSavingProject(true);
     try {
@@ -134,21 +170,37 @@ export default function AdminDashboard() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
+
+        if (response.ok) {
+          const updatedProject = await response.json();
+          // Immediately update UI for edit
+          setProjects(projects.map(p =>
+            p.id === editingProject.id ? updatedProject : p
+          ));
+        }
       } else {
         response = await fetch('/api/projects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(projectData),
         });
+
+        if (response.ok) {
+          const newProject = await response.json();
+          // Immediately add to UI
+          setProjects([newProject, ...projects]);
+        }
       }
 
-      if (response.ok) {
-        await fetchData();
+      if (response?.ok) {
         setShowProjectModal(false);
         resetProjectForm();
+      } else {
+        alert('Failed to save project');
       }
     } catch (error) {
       console.error('Failed to save project:', error);
+      alert('An error occurred');
     } finally {
       setSavingProject(false);
     }
@@ -219,22 +271,20 @@ export default function AdminDashboard() {
         <div className="flex gap-4 mb-8 border-b border-white/10 pb-4">
           <button
             onClick={() => setActiveTab('messages')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'messages'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${activeTab === 'messages'
                 ? 'bg-purple-600 text-white'
                 : 'text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             <Mail size={18} />
             Messages ({messages.filter(m => !m.isRead).length})
           </button>
           <button
             onClick={() => setActiveTab('projects')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
-              activeTab === 'projects'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${activeTab === 'projects'
                 ? 'bg-purple-600 text-white'
                 : 'text-gray-400 hover:text-white'
-            }`}
+              }`}
           >
             <FolderGit2 size={18} />
             Projects ({projects.length})
@@ -253,11 +303,10 @@ export default function AdminDashboard() {
               messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`p-6 rounded-2xl transition-all ${
-                    msg.isRead
+                  className={`p-6 rounded-2xl transition-all ${msg.isRead
                       ? 'bg-white/5 border border-white/10'
                       : 'bg-purple-900/20 border border-purple-500/50 shadow-lg shadow-purple-500/10'
-                  }`}
+                    }`}
                 >
                   <div className="flex justify-between items-start flex-wrap gap-4">
                     <div className="flex-1">
@@ -273,11 +322,10 @@ export default function AdminDashboard() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleMarkRead(msg.id, msg.isRead)}
-                        className={`p-2 rounded-lg transition ${
-                          msg.isRead
+                        className={`p-2 rounded-lg transition ${msg.isRead
                             ? 'text-gray-400 hover:text-green-400'
                             : 'text-green-400 hover:text-green-300'
-                        }`}
+                          }`}
                         title={msg.isRead ? 'Mark as unread' : 'Mark as read'}
                       >
                         {msg.isRead ? <Circle size={20} /> : <CheckCircle size={20} />}
@@ -361,7 +409,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Project Modal */}
+      {/* Project Modal - Keep as is */}
       {showProjectModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
@@ -376,7 +424,7 @@ export default function AdminDashboard() {
                 <X size={20} className="text-gray-400" />
               </button>
             </div>
-            
+
             <div className="p-6 space-y-4">
               <ImageUpload
                 onImageUploaded={(url, publicId) => {
@@ -389,7 +437,7 @@ export default function AdminDashboard() {
                   setImagePublicId(null);
                 }}
               />
-              
+
               <div>
                 <label className="block text-gray-300 text-sm mb-1">Project Name *</label>
                 <input
@@ -399,7 +447,7 @@ export default function AdminDashboard() {
                   className="w-full px-4 py-2 bg-white/10 rounded-lg text-white border border-white/20 focus:border-purple-500 focus:outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm mb-1">Description *</label>
                 <textarea
@@ -409,7 +457,7 @@ export default function AdminDashboard() {
                   className="w-full px-4 py-2 bg-white/10 rounded-lg text-white border border-white/20 focus:border-purple-500 focus:outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm mb-1">
                   Technologies (comma separated) *
@@ -422,7 +470,7 @@ export default function AdminDashboard() {
                   className="w-full px-4 py-2 bg-white/10 rounded-lg text-white border border-white/20 focus:border-purple-500 focus:outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm mb-1">GitHub URL *</label>
                 <input
@@ -432,7 +480,7 @@ export default function AdminDashboard() {
                   className="w-full px-4 py-2 bg-white/10 rounded-lg text-white border border-white/20 focus:border-purple-500 focus:outline-none"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-gray-300 text-sm mb-1">Live Demo URL (optional)</label>
                 <input
@@ -442,7 +490,7 @@ export default function AdminDashboard() {
                   className="w-full px-4 py-2 bg-white/10 rounded-lg text-white border border-white/20 focus:border-purple-500 focus:outline-none"
                 />
               </div>
-              
+
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleSaveProject}
