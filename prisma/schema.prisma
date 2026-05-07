@@ -28,3 +28,17 @@ model Message {
   isRead  Boolean  @default(false)
   sentAt  DateTime @default(now())
 }
+
+// ============================================
+// NEW: Skill model for dynamic skills management
+// ============================================
+model Skill {
+  id        String   @id @default(cuid())
+  name      String   @unique        // Must be unique (e.g., "React", "TypeScript")
+  level     Int      @default(80)   // Percentage 0-100
+  category  String   @default("technical")  // technical, soft, tools
+  order     Int      @default(0)    // For sorting
+  isVisible Boolean  @default(true) // Show/hide on website
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
