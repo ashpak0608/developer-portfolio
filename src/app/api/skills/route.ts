@@ -1,17 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-// Create a new Prisma client instance for this route
-const prisma = new PrismaClient();
-
-// GET - Fetch all skills
+// GET - Fetch all visible skills for frontend
 export async function GET() {
     try {
         const skills = await prisma.skill.findMany({
             orderBy: [
                 { order: 'asc' },
                 { name: 'asc' }
-            ]
+            ],
+            where: { isVisible: true }
         });
 
         return NextResponse.json(skills || []);
@@ -21,14 +19,11 @@ export async function GET() {
     }
 }
 
-// POST - Create new skill
+// POST - Create new skill (admin only)
 export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        console.log('Received skill data:', body);
-
-        // Validate required fields
         if (!body.name || body.name.trim() === '') {
             return NextResponse.json(
                 { error: 'Skill name is required' },
@@ -36,11 +31,18 @@ export async function POST(request: Request) {
             );
         }
 
-        // Create the skill
+        const level = Number(body.level);
+        if (isNaN(level)) {
+            return NextResponse.json(
+                { error: 'Level must be a valid number' },
+                { status: 400 }
+            );
+        }
+
         const skill = await prisma.skill.create({
             data: {
                 name: body.name.trim(),
-                level: Number(body.level) || 80,
+                level: Math.min(100, Math.max(0, level)),
                 category: body.category || 'technical',
                 order: Number(body.order) || 0,
                 isVisible: body.isVisible === true || body.isVisible === 'true',

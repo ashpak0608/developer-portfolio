@@ -42,3 +42,61 @@ model Skill {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// NEW: Hero Section Settings
+model HeroSetting {
+  id            String   @id @default(cuid())
+  greeting      String   @default("Hi, I'm")
+  name          String   @default("Ashpak Shaikh")
+  titleLines    String[] @default(["Full Stack Developer", "Next.js Developer", "Node.js Backend Engineer"])
+  description   String   @default("I build scalable applications using modern technologies.")
+  primaryBtnText String  @default("View My Work")
+  secondaryBtnText String @default("Contact Me")
+  updatedAt     DateTime @updatedAt
+}
+
+// NEW: About Section
+model AboutSetting {
+  id          String   @id @default(cuid())
+  bio         String   @db.Text
+  stats       Json     // Stores array of {value, label, icon}
+  updatedAt   DateTime @updatedAt
+}
+
+// NEW: Social Link
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String   @unique
+  url       String
+  icon      String
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// NEW: Site Setting
+model SiteSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  type        String   @default("text")
+  category    String   @default("general")
+  updatedAt   DateTime @updatedAt
+}
+
+// NEW: Testimonial
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  company     String?
+  position    String?
+  content     String   @db.Text
+  rating      Int      @default(5)
+  imageUrl    String?
+  imagePublicId String?
+  isVisible   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

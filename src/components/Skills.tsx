@@ -48,31 +48,29 @@ interface Skill {
     name: string;
     level: number;
     category: string;
+    isVisible: boolean;
 }
 
 export default function Skills() {
     const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.1 });
     const [skills, setSkills] = useState<Skill[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetch('/api/skills')
             .then(res => res.json())
             .then(data => {
-                console.log('Skills API response:', data); // Debug log
-                // Ensure data is an array
                 if (Array.isArray(data)) {
-                    setSkills(data);
+                    // Only show visible skills
+                    const visibleSkills = data.filter((skill: Skill) => skill.isVisible === true);
+                    setSkills(visibleSkills);
                 } else {
-                    console.error('API did not return an array:', data);
                     setSkills([]);
                 }
                 setLoading(false);
             })
             .catch(err => {
                 console.error('Failed to fetch skills:', err);
-                setError(err.message);
                 setSkills([]);
                 setLoading(false);
             });
@@ -82,18 +80,10 @@ export default function Skills() {
         return (
             <section id="skills" className="py-32">
                 <div className="max-w-7xl mx-auto px-4 text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">Loading Skills...</h2>
-                </div>
-            </section>
-        );
-    }
-
-    if (error) {
-        return (
-            <section id="skills" className="py-32">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">Technical Skills</h2>
-                    <p className="text-red-400">Error loading skills: {error}</p>
+                    <div className="animate-pulse">
+                        <div className="h-12 w-48 bg-purple-600/20 rounded mx-auto mb-4"></div>
+                        <div className="h-1 w-24 bg-purple-600/20 rounded mx-auto"></div>
+                    </div>
                 </div>
             </section>
         );
@@ -104,7 +94,7 @@ export default function Skills() {
             <section id="skills" className="py-32">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <h2 className="text-4xl md:text-5xl font-bold mb-6">Technical Skills</h2>
-                    <p className="text-gray-400">No skills added yet. Add some in the admin panel!</p>
+                    <p className="text-gray-400">Skills coming soon!</p>
                 </div>
             </section>
         );

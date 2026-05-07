@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Typed from "typed.js";
 import ThreeScene from "./ThreeScene";
@@ -8,34 +8,64 @@ import { ArrowDown } from "lucide-react";
 
 export default function Hero() {
     const typedRef = useRef(null);
+    const [heroData, setHeroData] = useState({
+        greeting: "Hi, I'm",
+        name: "Ashpak Shaikh",
+        titleLines: ["Full Stack Developer", "Next.js Developer", "Node.js Backend Engineer"],
+        description: "I build scalable, performant applications using modern technologies that solve real-world problems and help businesses grow.",
+        primaryBtnText: "View My Work",
+        secondaryBtnText: "Contact Me"
+    });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const typed = new Typed(typedRef.current, {
-            strings: [
-                "Full Stack Developer",
-                "Backend Specialist",
-                "Problem Solver"
-            ],
-            typeSpeed: 60,
-            backSpeed: 40,
-            loop: true,
-            backDelay: 1500,
-        });
-
-        return () => typed.destroy();
+        fetch('/api/hero')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.titleLines) {
+                    setHeroData(data);
+                }
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Failed to fetch hero data:', error);
+                setLoading(false);
+            });
     }, []);
+
+    useEffect(() => {
+        if (!loading && heroData.titleLines && heroData.titleLines.length > 0 && typedRef.current) {
+            const typed = new Typed(typedRef.current, {
+                strings: heroData.titleLines,
+                typeSpeed: 60,
+                backSpeed: 40,
+                loop: true,
+                backDelay: 1500,
+            });
+            return () => typed.destroy();
+        }
+    }, [loading, heroData.titleLines]);
+
+    if (loading) {
+        return (
+            <section className="relative h-screen flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 z-0"><ThreeScene /></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/50 to-black z-10" />
+                <div className="relative z-20 text-center px-4">
+                    <div className="animate-pulse">
+                        <div className="h-12 w-64 bg-purple-600/20 rounded mx-auto mb-4"></div>
+                        <div className="h-8 w-80 bg-purple-600/20 rounded mx-auto mb-8"></div>
+                        <div className="h-20 w-96 bg-purple-600/20 rounded mx-auto"></div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="relative h-screen flex items-center justify-center overflow-hidden">
-            {/* 3D Background */}
-            <div className="absolute inset-0 z-0">
-                <ThreeScene />
-            </div>
-
-            {/* Gradient Overlay */}
+            <div className="absolute inset-0 z-0"><ThreeScene /></div>
             <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/50 to-black z-10" />
-
-            {/* Content */}
             <div className="relative z-20 text-center px-4 max-w-5xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -43,9 +73,9 @@ export default function Hero() {
                     transition={{ duration: 0.8 }}
                 >
                     <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                        Hi, I'm{" "}
+                        {heroData.greeting}{" "}
                         <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text animate-gradient">
-                            Ashpak Shaikh
+                            {heroData.name}
                         </span>
                     </h1>
                 </motion.div>
@@ -65,8 +95,7 @@ export default function Hero() {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12"
                 >
-                    I build scalable, performant applications using modern technologies
-                    that solve real-world problems and help businesses grow.
+                    {heroData.description}
                 </motion.p>
 
                 <motion.div
@@ -81,7 +110,7 @@ export default function Hero() {
                         whileTap={{ scale: 0.95 }}
                         className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all"
                     >
-                        View My Work
+                        {heroData.primaryBtnText}
                     </motion.a>
                     <motion.a
                         href="#contact"
@@ -89,11 +118,10 @@ export default function Hero() {
                         whileTap={{ scale: 0.95 }}
                         className="px-8 py-4 bg-white/10 backdrop-blur-sm rounded-full text-white font-semibold hover:bg-white/20 transition-all border border-white/10"
                     >
-                        Contact Me
+                        {heroData.secondaryBtnText}
                     </motion.a>
                 </motion.div>
 
-                {/* Scroll Indicator */}
                 <motion.a
                     href="#about"
                     className="absolute bottom-8 left-1/2 transform -translate-x-1/2"

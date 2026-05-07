@@ -25,17 +25,38 @@ export default function Projects() {
     fetch('/api/projects')
       .then(res => res.json())
       .then(data => {
-        setProjects(data);
+        if (Array.isArray(data)) {
+          setProjects(data);
+        } else {
+          setProjects([]);
+        }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setProjects([]);
+        setLoading(false);
+      });
   }, []);
 
   if (loading) {
     return (
       <section id="projects" className="py-32">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Loading Projects...</h2>
+          <div className="animate-pulse">
+            <div className="h-12 w-48 bg-purple-600/20 rounded mx-auto mb-4"></div>
+            <div className="h-1 w-24 bg-purple-600/20 rounded mx-auto"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <section id="projects" className="py-32">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">Featured Projects</h2>
+          <p className="text-gray-400">Projects coming soon!</p>
         </div>
       </section>
     );
@@ -74,7 +95,6 @@ export default function Projects() {
               whileHover={{ y: -10 }}
               className="group relative bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all duration-300"
             >
-              {/* Project Image */}
               <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
                 {project.imageUrl ? (
                   <Image
@@ -92,12 +112,8 @@ export default function Projects() {
               </div>
 
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  {project.name}
-                </h3>
-                <p className="text-gray-400 mb-4 line-clamp-2">
-                  {project.description}
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-3">{project.name}</h3>
+                <p className="text-gray-400 mb-4 line-clamp-2">{project.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.technologies.slice(0, 4).map((tech) => (
