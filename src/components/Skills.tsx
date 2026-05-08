@@ -6,10 +6,9 @@ import { useEffect, useState } from "react";
 import {
     SiReact, SiNextdotjs, SiNodedotjs, SiTypescript,
     SiTailwindcss, SiGit, SiDocker, SiMysql, SiMongodb,
-    SiLaravel, SiPhp, SiLinux
+    SiLaravel, SiPhp, SiLinux, SiPrisma
 } from "react-icons/si";
 
-// Map icon names to components
 const iconMap: Record<string, any> = {
     react: SiReact,
     nextjs: SiNextdotjs,
@@ -24,12 +23,12 @@ const iconMap: Record<string, any> = {
     laravel: SiLaravel,
     php: SiPhp,
     linux: SiLinux,
+    prisma: SiPrisma,
 };
 
-// Color map for different technologies
 const colorMap: Record<string, string> = {
     react: "#61DAFB",
-    nextjs: "#ffffff",
+    nextjs: "#000000",
     nodejs: "#339933",
     typescript: "#3178C6",
     tailwind: "#06B6D4",
@@ -41,6 +40,7 @@ const colorMap: Record<string, string> = {
     laravel: "#FF2D20",
     php: "#777BB4",
     linux: "#FCC624",
+    prisma: "#2D3748",
 };
 
 interface Skill {
@@ -61,7 +61,6 @@ export default function Skills() {
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {
-                    // Only show visible skills
                     const visibleSkills = data.filter((skill: Skill) => skill.isVisible === true);
                     setSkills(visibleSkills);
                 } else {
@@ -69,39 +68,24 @@ export default function Skills() {
                 }
                 setLoading(false);
             })
-            .catch(err => {
-                console.error('Failed to fetch skills:', err);
-                setSkills([]);
-                setLoading(false);
-            });
+            .catch(() => setLoading(false));
     }, []);
 
     if (loading) {
         return (
-            <section id="skills" className="py-32">
+            <section id="skills" className="py-32 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <div className="animate-pulse">
-                        <div className="h-12 w-48 bg-purple-600/20 rounded mx-auto mb-4"></div>
-                        <div className="h-1 w-24 bg-purple-600/20 rounded mx-auto"></div>
+                        <div className="h-12 w-48 bg-purple-200 rounded-lg mx-auto mb-4"></div>
+                        <div className="h-1 w-24 bg-purple-200 rounded-lg mx-auto"></div>
                     </div>
                 </div>
             </section>
         );
     }
 
-    if (skills.length === 0) {
-        return (
-            <section id="skills" className="py-32">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">Technical Skills</h2>
-                    <p className="text-gray-400">Skills coming soon!</p>
-                </div>
-            </section>
-        );
-    }
-
     return (
-        <section id="skills" className="py-32 relative overflow-hidden">
+        <section id="skills" className="py-32 bg-gray-50 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     ref={ref}
@@ -110,14 +94,14 @@ export default function Skills() {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
                         Technical{" "}
-                        <span className="bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+                        <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-transparent bg-clip-text">
                             Skills
                         </span>
                     </h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full" />
-                    <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+                    <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full" />
+                    <p className="text-gray-600 mt-6 max-w-2xl mx-auto">
                         Here are the technologies I work with regularly.
                     </p>
                 </motion.div>
@@ -135,24 +119,23 @@ export default function Skills() {
                                 animate={inView ? { opacity: 1, y: 0 } : {}}
                                 transition={{ duration: 0.5, delay: index * 0.05 }}
                                 whileHover={{ scale: 1.05, y: -5 }}
-                                className="group relative bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 hover:border-purple-500/50 transition-all duration-300"
+                                className="group bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300"
                             >
                                 <div className="flex flex-col items-center">
-                                    <Icon
-                                        className="w-12 h-12 mb-4 transition-transform group-hover:scale-110"
-                                        style={{ color }}
-                                    />
-                                    <h3 className="text-lg font-semibold text-white mb-2">{skill.name}</h3>
-                                    <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <Icon className="w-8 h-8" style={{ color }} />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{skill.name}</h3>
+                                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                                         <motion.div
                                             initial={{ width: 0 }}
                                             animate={inView ? { width: `${skill.level}%` } : {}}
                                             transition={{ duration: 1, delay: 0.5 + index * 0.02 }}
-                                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+                                            className="bg-gradient-to-r from-purple-600 to-indigo-600 h-2 rounded-full"
                                             style={{ width: `${skill.level}%` }}
                                         />
                                     </div>
-                                    <span className="text-sm text-gray-400">{skill.level}%</span>
+                                    <span className="text-sm text-gray-500 font-medium">{skill.level}%</span>
                                 </div>
                             </motion.div>
                         );

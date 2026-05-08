@@ -3,38 +3,44 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
+  --background: #ffffff;
+  --foreground: #111827;
+  --primary: #7c3aed;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  color: #111827;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
 }
 
-/* Custom scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #8b5cf6, #ec4899);
-  border-radius: 5px;
+  background: linear-gradient(to bottom, #8b5cf6, #6366f1);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #7c3aed, #db2777);
+  background: linear-gradient(to bottom, #7c3aed, #4f46e5);
 }
 
-/* Gradient text animation */
+/* Gradient Animation */
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
@@ -54,7 +60,32 @@ body {
   animation: gradient 8s ease infinite;
 }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+/* Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
 }
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Smooth Section Transitions */
+section {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Selection Color */
+::selection {
+  background: #8b5cf6;
+  color: white;
+}
+
+/* Hide scrollbar while loading? No, keep for better UX */

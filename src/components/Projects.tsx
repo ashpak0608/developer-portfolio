@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Github, ExternalLink, Code2 } from "lucide-react";
+import { Github, ExternalLink, FolderGit2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -32,38 +32,24 @@ export default function Projects() {
         }
         setLoading(false);
       })
-      .catch(() => {
-        setProjects([]);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <section id="projects" className="py-32">
+      <section id="projects" className="py-32 bg-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="animate-pulse">
-            <div className="h-12 w-48 bg-purple-600/20 rounded mx-auto mb-4"></div>
-            <div className="h-1 w-24 bg-purple-600/20 rounded mx-auto"></div>
+            <div className="h-12 w-48 bg-purple-200 rounded-lg mx-auto mb-4"></div>
+            <div className="h-1 w-24 bg-purple-200 rounded-lg mx-auto"></div>
           </div>
         </div>
       </section>
     );
   }
 
-  if (projects.length === 0) {
-    return (
-      <section id="projects" className="py-32">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Featured Projects</h2>
-          <p className="text-gray-400">Projects coming soon!</p>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section id="projects" className="py-32 relative overflow-hidden">
+    <section id="projects" className="py-32 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -72,14 +58,14 @@ export default function Projects() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
             Featured{" "}
-            <span className="bg-gradient-to-r from-purple-400 to-pink-600 text-transparent bg-clip-text">
+            <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-transparent bg-clip-text">
               Projects
             </span>
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full" />
-          <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
+          <div className="w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full" />
+          <p className="text-gray-600 mt-6 max-w-2xl mx-auto">
             Here are some of my recent projects. Each one is built with
             attention to detail and a focus on user experience.
           </p>
@@ -93,9 +79,9 @@ export default function Projects() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               whileHover={{ y: -10 }}
-              className="group relative bg-white/5 backdrop-blur-lg rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all duration-300"
+              className="group bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300"
             >
-              <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900">
+              <div className="relative h-56 w-full overflow-hidden bg-gradient-to-br from-purple-100 to-indigo-100">
                 {project.imageUrl ? (
                   <Image
                     src={project.imageUrl}
@@ -105,27 +91,27 @@ export default function Projects() {
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Code2 className="w-16 h-16 text-white/20" />
+                    <FolderGit2 className="w-16 h-16 text-purple-300" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
               <div className="p-6">
-                <h3 className="text-2xl font-bold text-white mb-3">{project.name}</h3>
-                <p className="text-gray-400 mb-4 line-clamp-2">{project.description}</p>
+                <h3 className="text-2xl font-bold text-gray-800 mb-3">{project.name}</h3>
+                <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
 
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.technologies.slice(0, 4).map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 bg-white/10 rounded-full text-sm text-gray-300"
+                      className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm font-medium"
                     >
                       {tech}
                     </span>
                   ))}
                   {project.technologies.length > 4 && (
-                    <span className="px-3 py-1 bg-white/10 rounded-full text-sm text-gray-400">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
                       +{project.technologies.length - 4}
                     </span>
                   )}
@@ -136,10 +122,10 @@ export default function Projects() {
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all"
                   >
-                    <Github size={20} />
+                    <Github size={18} />
                     <span>Code</span>
                   </motion.a>
                   {project.live && (
@@ -147,10 +133,10 @@ export default function Projects() {
                       href={project.live}
                       target="_blank"
                       rel="noopener noreferrer"
-                      whileHover={{ scale: 1.1 }}
-                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:shadow-lg transition-all"
                     >
-                      <ExternalLink size={20} />
+                      <ExternalLink size={18} />
                       <span>Live Demo</span>
                     </motion.a>
                   )}
